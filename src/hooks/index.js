@@ -1,3 +1,4 @@
-import { useInterval } from "./useInterval";
+import { useInterval } from './useInterval'
+import { useAsync } from './useAsync'
 
-export { useInterval };
+export { useInterval, useAsync }
