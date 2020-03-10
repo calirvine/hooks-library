@@ -1,17 +1,21 @@
+//For a more full featured async hook see https://github.com/async-library/react-async
+//This is ok for basic uses.
+
 import { useState, useEffect } from 'react'
 
-export function useAsync(promiseFn, dataProperty = 'data') {
+export function useAsync(promisable = {}, dataProperty = 'data') {
+  const { promiseFn, ...params } = promisable
   const [pending, setPending] = useState(true)
   const [resolved, setResolved] = useState(false)
-  const [response, setResponse] = useState(null)
+  const [data, setData] = useState(null)
   const [error, setError] = useState(null)
   const [reload, setReload] = useState(0)
 
   useEffect(() => {
     const doAsync = async () => {
       try {
-        const data = await promiseFn()
-        setResponse(data[dataProperty])
+        const response = await promiseFn(...params)
+        setData(response[dataProperty])
         setPending(false)
         setResolved(true)
       } catch (err) {
@@ -20,13 +24,16 @@ export function useAsync(promiseFn, dataProperty = 'data') {
         setResolved(true)
       }
     }
+    setPending(true)
+    setResolved(false)
+    setError(null)
     doAsync()
-  }, [reload, promiseFn, dataProperty])
+  }, [reload, promiseFn, dataProperty, params])
 
   return {
     pending,
     resolved,
-    response,
+    data,
     error,
     reload: () => setReload(reload => reload++),
   }
