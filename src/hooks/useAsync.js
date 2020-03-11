@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react'
 
-export function useAsync(promisable = {}, dataProperty = 'data') {
+export function useAsync(promisable = { promiseFn: async () => null }) {
   const { promiseFn, ...params } = promisable
   const [pending, setPending] = useState(true)
   const [resolved, setResolved] = useState(false)
@@ -15,7 +15,7 @@ export function useAsync(promisable = {}, dataProperty = 'data') {
     const doAsync = async () => {
       try {
         const response = await promiseFn(...params)
-        setData(response[dataProperty])
+        setData(response)
         setPending(false)
         setResolved(true)
       } catch (err) {
@@ -28,7 +28,7 @@ export function useAsync(promisable = {}, dataProperty = 'data') {
     setResolved(false)
     setError(null)
     doAsync()
-  }, [reload, promiseFn, dataProperty, params])
+  }, [reload, promiseFn, params])
 
   return {
     pending,
